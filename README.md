@@ -42,7 +42,7 @@ git checkout -b feat/arsene-stades
 
 1. Ouvrir MySQL (Workbench, phpMyAdmin ou ligne de commande) et créer la base `coupe_du_monde`.
 2. Exécuter le contenu de `database.sql` sur cette base.
-3. Vérifier les identifiants dans `src/db/ConnexionDB.java` (par défaut : utilisateur `root`, mot de passe `admin`). Ne pas pousser de mot de passe personnel modifié.
+3. Vérifier les identifiants dans `src/db/ConnexionDB.java` (configuration partagée : utilisateur `user_cdm`, mot de passe `cdm2022`). Ne pas pousser de mot de passe personnel modifié.
 
 ### Étape 3 - Lier le pilote MySQL (`lib/*.jar`)
 
