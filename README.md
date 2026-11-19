@@ -108,3 +108,24 @@ Vider les tables (`TRUNCATE TABLE matchs, stades, pays;` avec réinitialisation 
 ### 23h50 - Rendu final
 
 Exporter l'archive finale (`.zip` contenant le code source, `lib/` et `database.sql`) et livrer avant 00h00.
+
+## Configuration rapide de la bd
+-- 1. Créer la base si ce n'est pas encore fait
+```CREATE DATABASE IF NOT EXISTS coupe_du_monde CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;```
+
+-- 2. Créer un utilisateur commun pour l'équipe
+```CREATE USER IF NOT EXISTS 'user_cdm'@'localhost' IDENTIFIED BY 'cdm2022';```
+
+-- 3. Lui donner tous les droits uniquement sur la base du projet
+```GRANT ALL PRIVILEGES ON coupe_du_monde.* TO 'user_cdm'@'localhost';```
+
+-- 4. Appliquer immédiatement les privilèges
+```FLUSH PRIVILEGES;```
+
+## Exécution 
+J'ai ajouté des scripts pour la compilation et l'exécution
+Rendez les exécutable
+    ```chmod +x build.sh run.sh```
+
+A chaque modification faites simplement
+    ```./build.sh && ./run.sh``

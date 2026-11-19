@@ -14,8 +14,8 @@ public class ConnexionDB {
     private static final String HOST     = "localhost";
     private static final String PORT     = "3306";
     private static final String DATABASE = "coupe_du_monde";
-    private static final String USER     = "root";
-    private static final String PASSWORD = "admin";
+    private static final String USER     = "cdm_user";
+    private static final String PASSWORD = "cdm2022";
 
     private static final String URL =
             "jdbc:mysql://" + HOST + ":" + PORT + "/" + DATABASE
