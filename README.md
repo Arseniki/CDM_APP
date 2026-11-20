@@ -122,10 +122,59 @@ Exporter l'archive finale (`.zip` contenant le code source, `lib/` et `database.
 -- 4. Appliquer immédiatement les privilèges
 ```FLUSH PRIVILEGES;```
 
+## Créer une application Linux exécutable
+
+Sur Linux x86_64 avec un JDK 17+ (incluant `jpackage`), lancer :
+
+```bash
+chmod +x package-linux.sh
+./package-linux.sh
+```
+
+Le lanceur autonome sera créé ici :
+
+```bash
+./dist/CoupeDuMonde/bin/CoupeDuMonde
+```
+
+Le dossier complet peut être transféré via l'archive :
+
+```text
+dist/CoupeDuMonde-linux-x86_64.zip
+```
+
+L'image inclut un runtime Java et le pilote JDBC. Elle ne contient pas le serveur
+MySQL : celui-ci doit être installé, la base `coupe_du_monde` initialisée avec
+`database.sql`, et les identifiants configurés avant d'utiliser l'application.
+Cette image est construite pour Linux x86_64 ; Windows et macOS nécessitent un
+empaquetage distinct sur leur système cible.
+
+## Créer une application Windows exécutable
+
+Sur Windows x64, installer un JDK 17+ contenant `jpackage`, ouvrir PowerShell
+dans le dossier du projet et exécuter :
+
+```powershell
+.\package-windows.ps1
+```
+
+Si l'exécution des scripts est bloquée dans la session, utiliser :
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\package-windows.ps1
+```
+
+Le lanceur autonome sera créé à `dist\CoupeDuMonde\CoupeDuMonde.exe` et le
+dossier complet pourra être partagé dans `dist\CoupeDuMonde-windows-x64.zip`.
+Le paquet embarque le runtime Java et le pilote JDBC, mais pas le serveur MySQL.
+Il faut construire ce paquet sur Windows ; le paquet Linux n'est pas compatible.
+C'est une application portable et non un installateur MSI : extraire le ZIP puis
+lancer `CoupeDuMonde.exe`.
+
 ## Exécution 
 J'ai ajouté des scripts pour la compilation et l'exécution
 Rendez les exécutable
     ```chmod +x build.sh run.sh```
 
 A chaque modification faites simplement
-    ```./build.sh && ./run.sh``
+    ```./build.sh && ./run.sh``` 

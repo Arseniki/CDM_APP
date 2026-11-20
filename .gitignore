@@ -6,5 +6,6 @@
 bin/
 out/
 target/
+/dist/
 *.class
 .DS_Store
