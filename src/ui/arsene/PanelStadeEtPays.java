@@ -2,11 +2,17 @@ package ui.arsene;
 
 import db.ConnexionDB;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Dimension;
+import java.awt.Color;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,14 +24,18 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.Icon;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.RowFilter;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableRowSorter;
 import ui.design.UiTheme;
 
@@ -60,7 +70,7 @@ public class PanelStadeEtPays extends JPanel {
         sectionEquipes.add(actionsEquipes, BorderLayout.NORTH);
 
         modeleEquipes = new DefaultTableModel(
-                new Object[]{"Équipe", "Groupe"}, 0) {
+                new Object[]{"", "Équipe", "Groupe"}, 0) {
             @Override
             public boolean isCellEditable(int ligne, int colonne) {
                 return false;
@@ -69,6 +79,22 @@ public class PanelStadeEtPays extends JPanel {
         JTable tableEquipes = new JTable(modeleEquipes);
         tableEquipes.setPreferredScrollableViewportSize(
                 new Dimension(450, 96));
+        tableEquipes.getColumnModel().getColumn(0).setMaxWidth(50);
+        tableEquipes.getColumnModel().getColumn(0).setPreferredWidth(50);
+        tableEquipes.getColumnModel().getColumn(0).setCellRenderer(
+                new DefaultTableCellRenderer() {
+                    @Override
+                    public Component getTableCellRendererComponent(
+                            JTable table, Object valeur, boolean isSelected,
+                            boolean hasFocus, int ligne, int colonne) {
+                        JLabel rendu = (JLabel) super.getTableCellRendererComponent(
+                                table, "", isSelected, hasFocus, ligne, colonne);
+                        rendu.setIcon(valeur instanceof Icon ? (Icon) valeur : null);
+                        rendu.setHorizontalAlignment(JLabel.CENTER);
+                        rendu.setText("");
+                        return rendu;
+                    }
+                });
         sectionEquipes.add(UiTheme.creerScrollTable(tableEquipes), BorderLayout.CENTER);
 
         JPanel sectionAjout = UiTheme.creerSection("2. Ajouter un stade");
@@ -80,6 +106,7 @@ public class PanelStadeEtPays extends JPanel {
         contraintes.weightx = 1.0;
 
         comboPays = new JComboBox<>();
+        activerRenduPays(comboPays);
         champVille = new JTextField();
         champNomStade = new JTextField();
         boutonEnregistrer = UiTheme.creerBouton("Enregistrer");
@@ -152,6 +179,19 @@ public class PanelStadeEtPays extends JPanel {
         table.setAutoCreateRowSorter(true);
         trieurStades = new TableRowSorter<>(modeleTable);
         table.setRowSorter(trieurStades);
+        table.getColumnModel().getColumn(1).setCellRenderer(
+                new DefaultTableCellRenderer() {
+                    @Override
+                    public Component getTableCellRendererComponent(
+                            JTable table, Object valeur, boolean isSelected,
+                            boolean hasFocus, int ligne, int colonne) {
+                        String pays = valeur == null ? "" : valeur.toString();
+                        JLabel rendu = (JLabel) super.getTableCellRendererComponent(
+                                table, pays, isSelected, hasFocus, ligne, colonne);
+                        rendu.setIcon(creerDrapeau(pays));
+                        return rendu;
+                    }
+                });
         table.getColumnModel().getColumn(0).setMaxWidth(70);
         table.getColumnModel().getColumn(1).setPreferredWidth(150);
         table.getColumnModel().getColumn(2).setPreferredWidth(150);
@@ -162,6 +202,7 @@ public class PanelStadeEtPays extends JPanel {
         barreFiltres.add(creerEtiquette("Pays"));
         filtrePays = new JComboBox<>();
         filtrePays.addItem("Tous les pays");
+        activerRenduPays(filtrePays);
         filtrePays.setPreferredSize(new Dimension(160, 26));
         filtrePays.addActionListener(event -> appliquerFiltres());
         barreFiltres.add(filtrePays);
@@ -211,11 +252,130 @@ public class PanelStadeEtPays extends JPanel {
         return etiquette;
     }
 
+    private void activerRenduPays(JComboBox<String> liste) {
+        liste.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(
+                    JList<?> table, Object valeur, int ligne,
+                    boolean isSelected, boolean hasFocus) {
+                String texte = valeur == null ? "" : valeur.toString();
+                Icon icone = null;
+                if (!"Tous les pays".equals(texte)) {
+                    icone = creerDrapeau(texte);
+                }
+                JLabel rendu = (JLabel) super.getListCellRendererComponent(
+                        table, texte, ligne, isSelected, hasFocus);
+                rendu.setIcon(icone);
+                return rendu;
+            }
+        });
+    }
+
+
     private void verifierFormulaire() {
         boutonEnregistrer.setEnabled(
                 comboPays.getSelectedItem() != null
                         && !champVille.getText().trim().isEmpty()
                         && !champNomStade.getText().trim().isEmpty());
+    }
+
+    private Icon creerDrapeau(String pays) {
+        return new DrapeauPays(pays);
+    }
+
+    private static final class DrapeauPays implements Icon {
+        private final String pays;
+
+        private DrapeauPays(String pays) {
+            this.pays = pays;
+        }
+
+        @Override
+        public int getIconWidth() {
+            return 24;
+        }
+
+        @Override
+        public int getIconHeight() {
+            return 16;
+        }
+
+        @Override
+        public void paintIcon(Component composant, Graphics graphics, int x, int y) {
+            Graphics2D g = (Graphics2D) graphics.create();
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON);
+
+            if ("Qatar".equals(pays)) {
+                g.setColor(Color.WHITE);
+                g.fillRect(x, y, 24, 16);
+                g.setColor(new Color(0x8A1538));
+                g.fillRect(x + 8, y, 16, 16);
+                g.setColor(Color.WHITE);
+                for (int i = 0; i < 8; i++) {
+                    int dy = y + i * 2;
+                    g.fillPolygon(new int[]{x + 6, x + 10, x + 6},
+                            new int[]{dy, dy + 1, dy + 2}, 3);
+                }
+            } else if ("Équateur".equals(pays)) {
+                g.setColor(new Color(0xFFD100));
+                g.fillRect(x, y, 24, 8);
+                g.setColor(new Color(0x0033A0));
+                g.fillRect(x, y + 8, 24, 4);
+                g.setColor(new Color(0xCE1126));
+                g.fillRect(x, y + 12, 24, 4);
+            } else if ("Sénégal".equals(pays)) {
+                g.setColor(new Color(0x00853F));
+                g.fillRect(x, y, 8, 16);
+                g.setColor(new Color(0xFDEF42));
+                g.fillRect(x + 8, y, 8, 16);
+                g.setColor(new Color(0xE31B23));
+                g.fillRect(x + 16, y, 8, 16);
+                g.setColor(new Color(0x00853F));
+                g.fillOval(x + 10, y + 6, 4, 4);
+            } else if ("Pays-Bas".equals(pays)) {
+                bandes(g, x, y, new Color(0xAE1C28),
+                        Color.WHITE, new Color(0x21468B));
+            } else if ("Angleterre".equals(pays)) {
+                g.setColor(Color.WHITE);
+                g.fillRect(x, y, 24, 16);
+                g.setColor(new Color(0xCE1124));
+                g.fillRect(x + 10, y, 4, 16);
+                g.fillRect(x, y + 6, 24, 4);
+            } else if ("Iran".equals(pays)) {
+                bandes(g, x, y, new Color(0x239F40),
+                        Color.WHITE, new Color(0xDA0000));
+            } else if ("États-Unis".equals(pays)) {
+                bandes(g, x, y, new Color(0xB22234),
+                        Color.WHITE, new Color(0xB22234));
+                g.setColor(new Color(0x3C3B6E));
+                g.fillRect(x, y, 10, 9);
+            } else if ("Pays de Galles".equals(pays)) {
+                g.setColor(Color.WHITE);
+                g.fillRect(x, y, 24, 8);
+                g.setColor(new Color(0x00A3A1));
+                g.fillRect(x, y + 8, 24, 8);
+                g.setColor(new Color(0xCE1124));
+                g.fillOval(x + 8, y + 4, 8, 8);
+            } else {
+                g.setColor(new Color(0xC0C0C0));
+                g.fillRect(x, y, 24, 16);
+            }
+
+            g.setColor(new Color(0x808080));
+            g.drawRect(x, y, 23, 15);
+            g.dispose();
+        }
+
+        private void bandes(Graphics2D g, int x, int y,
+                Color haut, Color milieu, Color bas) {
+            g.setColor(haut);
+            g.fillRect(x, y, 24, 6);
+            g.setColor(milieu);
+            g.fillRect(x, y + 6, 24, 4);
+            g.setColor(bas);
+            g.fillRect(x, y + 10, 24, 6);
+        }
     }
 
     private void initialiserEquipes() {
@@ -327,8 +487,10 @@ public class PanelStadeEtPays extends JPanel {
             try (Statement requete = connexion.createStatement();
                  ResultSet resultat = requete.executeQuery(sql)) {
                 while (resultat.next()) {
+                    String pays = resultat.getString("nom_pays");
                     modeleEquipes.addRow(new Object[]{
-                            resultat.getString("nom_pays"),
+                            creerDrapeau(pays),
+                            pays,
                             resultat.getString("groupe")
                     });
                 }
