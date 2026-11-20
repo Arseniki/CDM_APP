@@ -1,32 +1,25 @@
 package ui.mohamine;
 
 import db.ConnexionDB;
-import ui.design.UiTheme;
-
-import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableRowSorter;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.sql.*;
 import java.util.regex.Pattern;
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
+import ui.design.UiTheme;
 
-/**
- * Module Mohamine : Planification des matchs et saisie des scores (Question 3).
- * Intègre la charte graphique commune UiTheme.
- */
 public class PanelMatchs extends JPanel {
 
-    // Éléments de planification
     private JComboBox<String> cbPays1;
     private JComboBox<String> cbPays2;
     private JComboBox<StadeItem> cbStade;
     private JTextField tfDate;
     private JButton btnPlanifier;
 
-    // Tableau des matchs
     private JTable tableMatchs;
     private DefaultTableModel tableModel;
     private TableRowSorter<DefaultTableModel> trieurMatchs;
@@ -36,7 +29,6 @@ public class PanelMatchs extends JPanel {
     private JLabel lblMatchsJoues;
     private JLabel lblMatchsAvenir;
 
-    // Éléments de score
     private JLabel lblMatchSelectionne;
     private JSpinner spButs1;
     private JSpinner spButs2;
@@ -45,9 +37,6 @@ public class PanelMatchs extends JPanel {
 
     private Integer selectedMatchId = null;
 
-    /**
-     * Encapsule l'id_stade et le libellé pour la JComboBox de stades.
-     */
     public static class StadeItem {
         private final int idStade;
         private final String nomStade;
@@ -97,10 +86,8 @@ public class PanelMatchs extends JPanel {
         JPanel contenu = new JPanel(new BorderLayout(0, UiTheme.ESPACE_VERTICAL));
         contenu.setBackground(UiTheme.COULEUR_FOND);
 
-        // 1. Section Planification
         contenu.add(creerSectionPlanification(), BorderLayout.NORTH);
 
-        // 2. Section Tableau + Saisie Score
         JPanel centreEtSud = new JPanel(new BorderLayout(0, UiTheme.ESPACE_VERTICAL));
         centreEtSud.setBackground(UiTheme.COULEUR_FOND);
 
@@ -110,15 +97,12 @@ public class PanelMatchs extends JPanel {
         contenu.add(centreEtSud, BorderLayout.CENTER);
         racine.add(contenu, BorderLayout.CENTER);
 
-        // 3. Barre d'actions globale (bas)
         racine.add(creerBarreActions(), BorderLayout.SOUTH);
 
         add(racine, BorderLayout.CENTER);
 
-        // Écouteurs d'événements
         installerEcouteurs();
 
-        // Chargement initial des données
         chargerToutesLesDonnees();
     }
 
@@ -135,9 +119,11 @@ public class PanelMatchs extends JPanel {
         cbPays1 = new JComboBox<>();
         cbPays2 = new JComboBox<>();
         cbStade = new JComboBox<>();
+
         installerRenduPays(cbPays1);
         installerRenduPays(cbPays2);
         installerRenduStades();
+
         tfDate = new JTextField("2022-11-20", 10);
         btnPlanifier = UiTheme.creerBouton("Planifier le match");
         cbPays1.setFont(UiTheme.POLICE_NORMALE);
@@ -149,7 +135,6 @@ public class PanelMatchs extends JPanel {
         cbStade.setToolTipText("Choisissez le lieu de la rencontre");
         tfDate.setToolTipText("Format attendu : AAAA-MM-JJ");
 
-        // Ligne 0 : Pays 1 & Pays 2
         gbc.gridx = 0; gbc.gridy = 0; gbc.weightx = 0;
         form.add(creerLabel("Pays 1 :"), gbc);
 
@@ -162,7 +147,6 @@ public class PanelMatchs extends JPanel {
         gbc.gridx = 3; gbc.gridy = 0; gbc.weightx = 0.5;
         form.add(cbPays2, gbc);
 
-        // Ligne 1 : Stade & Date
         gbc.gridx = 0; gbc.gridy = 1; gbc.weightx = 0;
         form.add(creerLabel("Stade :"), gbc);
 
@@ -175,7 +159,6 @@ public class PanelMatchs extends JPanel {
         gbc.gridx = 3; gbc.gridy = 1; gbc.weightx = 0.5;
         form.add(tfDate, gbc);
 
-        // Ligne 2 : Bouton Planifier
         gbc.gridx = 3; gbc.gridy = 2; gbc.gridwidth = 1;
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.LINE_END;
@@ -711,7 +694,6 @@ public class PanelMatchs extends JPanel {
             return;
         }
 
-        // Validation métier : interdiction d'un match contre soi-même
         if (pays1.equals(pays2)) {
             JOptionPane.showMessageDialog(this,
                     "Un pays ne peut pas jouer contre lui-même (" + pays1 + ").",

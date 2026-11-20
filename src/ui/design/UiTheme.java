@@ -10,24 +10,13 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
-/**
- * Theme visuel commun aux 3 modules de l'application.
- *
- * Regles d'utilisation (a respecter par tous) :
- *  - Ne jamais mettre de couleur en dur (new Color(...)) dans un panneau.
- *  - Ne jamais mettre de police en dur (new Font(...)) dans un panneau.
- *  - Toujours utiliser creerEntete / creerBouton / creerSection / creerScrollTable.
- *  - Ne pas modifier ce fichier sans l'accord de l'equipe.
- */
 public final class UiTheme {
 
     private UiTheme() {
-        // Classe utilitaire : pas d'instanciation
+
     }
 
-    // ------------------------------------------------------------
-    // Couleurs
-    // ------------------------------------------------------------
+
     public static final Color COULEUR_FOND          = new Color(0xF5F5F5);
     public static final Color COULEUR_ENTETE        = new Color(0x1F3A5F);
     public static final Color COULEUR_TEXTE_ENTETE  = Color.WHITE;
@@ -38,30 +27,18 @@ public final class UiTheme {
     public static final Color COULEUR_GRILLE_TABLE  = new Color(0xD0D0D0);
     public static final Color COULEUR_TABLE_ALT     = new Color(0xEEF3F8);
 
-    // ------------------------------------------------------------
-    // Polices
-    // ------------------------------------------------------------
     public static final Font POLICE_TITRE    = new Font("SansSerif", Font.BOLD, 18);
     public static final Font POLICE_SECTION  = new Font("SansSerif", Font.BOLD, 13);
     public static final Font POLICE_NORMALE  = new Font("SansSerif", Font.PLAIN, 13);
     public static final Font POLICE_TABLE    = new Font("SansSerif", Font.PLAIN, 12);
 
-    // ------------------------------------------------------------
-    // Marges
-    // ------------------------------------------------------------
+
     public static final int MARGE_EXTERNE   = 15;
     public static final int MARGE_INTERNE   = 8;
     public static final int ESPACE_VERTICAL = 10;
     public static final int HAUTEUR_LIGNE_TABLE = 24;
 
-    // ------------------------------------------------------------
-    // Helpers de construction
-    // ------------------------------------------------------------
 
-    /**
-     * Entete de panneau : bandeau fonce avec un titre en blanc.
-     * A placer en BorderLayout.NORTH du panneau principal.
-     */
     public static JPanel creerEntete(String titre) {
         JPanel panneau = new JPanel(new BorderLayout());
         panneau.setBackground(COULEUR_ENTETE);
@@ -76,9 +53,7 @@ public final class UiTheme {
         return panneau;
     }
 
-    /**
-     * Bouton d'action standard (fond bleu, texte blanc).
-     */
+
     public static JButton creerBouton(String texte) {
         JButton bouton = new JButton(texte);
         bouton.setBackground(COULEUR_BOUTON);
@@ -88,10 +63,7 @@ public final class UiTheme {
         return bouton;
     }
 
-    /**
-     * Section titree : un JPanel vide avec un titre en haut.
-     * Le developpeur ajoute son contenu dans le CENTER du panneau retourne.
-     */
+
     public static JPanel creerSection(String titre) {
         JPanel panneau = new JPanel(new BorderLayout(0, MARGE_INTERNE));
         panneau.setBackground(COULEUR_FOND);
@@ -104,9 +76,7 @@ public final class UiTheme {
         return panneau;
     }
 
-    /**
-     * Scroll pane standard pour une JTable (police, hauteur de ligne, grille).
-     */
+
     public static JScrollPane creerScrollTable(JTable table) {
         table.setFont(POLICE_TABLE);
         table.setRowHeight(HAUTEUR_LIGNE_TABLE);
@@ -121,10 +91,7 @@ public final class UiTheme {
         return scroll;
     }
 
-    /**
-     * Panneau racine standard : fond, marges externes, layout vertical.
-     * A utiliser comme base de chaque PanelXxx.
-     */
+
     public static JPanel creerPanneauRacine() {
         JPanel panneau = new JPanel(new BorderLayout(0, ESPACE_VERTICAL));
         panneau.setBackground(COULEUR_FOND);

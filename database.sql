@@ -1,18 +1,10 @@
--- ============================================================
--- Coupe du Monde 2022 - Script d'initialisation (MySQL)
--- Conventions : tables au pluriel, colonnes en snake_case,
---               contraintes prefixees (pk_, fk_, uq_, ck_)
--- ============================================================
-
 SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS matchs;
 DROP TABLE IF EXISTS stades;
 DROP TABLE IF EXISTS pays;
 SET FOREIGN_KEY_CHECKS = 1;
 
--- ------------------------------------------------------------
--- Table : pays
--- ------------------------------------------------------------
+
 CREATE TABLE pays (
     nom_pays   VARCHAR(50) NOT NULL,
     groupe     CHAR(1)     NOT NULL,
@@ -20,9 +12,7 @@ CREATE TABLE pays (
     CONSTRAINT ck_pays_groupe CHECK (groupe IN ('A', 'B'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ------------------------------------------------------------
--- Table : stades
--- ------------------------------------------------------------
+
 CREATE TABLE stades (
     id_stade   INT          NOT NULL AUTO_INCREMENT,
     pays       VARCHAR(50)  NOT NULL,
@@ -32,9 +22,7 @@ CREATE TABLE stades (
     CONSTRAINT uq_stades_lieu UNIQUE (pays, ville, nom_stade)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ------------------------------------------------------------
--- Table : matchs
--- ------------------------------------------------------------
+
 CREATE TABLE matchs (
     id_match     INT         NOT NULL AUTO_INCREMENT,
     nom_pays_1   VARCHAR(50) NOT NULL,
@@ -62,11 +50,7 @@ CREATE TABLE matchs (
     )
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ============================================================
--- Donnees de test
--- ============================================================
 
--- 8 equipes des groupes A et B (Coupe du Monde 2022)
 INSERT IGNORE INTO pays (nom_pays, groupe) VALUES
     ('Qatar',         'A'),
     ('Équateur',      'A'),
@@ -77,14 +61,12 @@ INSERT IGNORE INTO pays (nom_pays, groupe) VALUES
     ('États-Unis',    'B'),
     ('Pays de Galles','B');
 
--- 3 stades (assez pour tester le JComboBox de Mohamine)
 INSERT IGNORE INTO stades (pays, ville, nom_stade) VALUES
     ('Qatar', 'Al Khor',   'Al Bayt Stadium'),
     ('Qatar', 'Doha',      'Stadium 974'),
     ('Qatar', 'Al Rayyan', 'Education City Stadium');
 
--- 2 matchs joues (pour tester le classement de Martin)
--- + 1 match non joue (pour tester l'UPDATE de Mohamine)
+
 INSERT INTO matchs (nom_pays_1, nom_pays_2, id_stade, date_match, pays_1_buts, pays_2_buts) VALUES
     ('Qatar',      'Équateur', 1, '2022-11-20', 0,    2),
     ('Sénégal',    'Pays-Bas', 2, '2022-11-21', 0,    2),
